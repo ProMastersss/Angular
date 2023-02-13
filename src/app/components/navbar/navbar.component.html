@@ -9,8 +9,8 @@
   >
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a (click)="drawer.toggle()" *ngFor="let link of links" [routerLink]="link.route"
-         mat-list-item>{{ link.name }}</a>
+      <a (click)="drawer.toggle()" *ngFor="let link of links" [routerLink]="link.route" mat-list-item
+         routerLinkActive="active">{{ link.name }}</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

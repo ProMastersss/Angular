@@ -30,7 +30,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
   declarations: [AppComponent, NavbarComponent, HeroesComponent, HeroDetailsComponent, MessagesComponent, DashboardComponent, HeroSearchComponent, HeroFormComponent],
   imports: [
     HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, {dataEncapsulation: true}),
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     BrowserAnimationsModule,
     LayoutModule,
