@@ -1,0 +1,29 @@
+<div class="col">
+  <form #heroForm="ngForm" (ngSubmit)="onSubmit()" *ngIf="!submitted">
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input #name="ngModel" [(ngModel)]="model.name" matInput name="name" placeholder="name" required/>
+      <mat-error *ngIf="!(name.valid && name.pristine)">Name is required</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Alter ego</mat-label>
+      <input [(ngModel)]="model.alterEgo" matInput name="alterEgo" placeholder="Alter ego"/>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Power</mat-label>
+      <mat-select [formControl]="powerControl" required>
+        <mat-option *ngFor="let power of powers" value="{{power}}">{{power}}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="!powerControl.valid">
+        Power is required
+      </mat-error>
+    </mat-form-field>
+    <button (click)="onSubmit()" [disabled]="!heroForm.form.valid || !powerControl.valid"
+            color="primary"
+            mat-raised-button type="button">
+      Add hero
+    </button>
+  </form>
+  <mat-spinner *ngIf="submitted"></mat-spinner>
+</div>
+

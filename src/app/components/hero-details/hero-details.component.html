@@ -1,0 +1,21 @@
+<div *ngIf="hero">
+  <h2 class="text-center">{{ hero.name }} Details</h2>
+  <div class="row nav">
+    <button (click)="goBack()" mat-raised-button>Go back</button>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="column">
+        <div><span>id: </span>{{ hero.id }}</div>
+        <div><span>name: </span>{{ hero.name | uppercase }}</div>
+      </div>
+    </div>
+    <div class="col">
+      <mat-form-field>
+        <mat-label>Hero name</mat-label>
+        <input [(ngModel)]="hero.name" id="name" matInput placeholder="name"/>
+      </mat-form-field>
+      <button (click)="save()" class="btn" color="primary" mat-raised-button>Save</button>
+    </div>
+  </div>
+</div>

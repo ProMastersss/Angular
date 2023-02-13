@@ -1,0 +1,17 @@
+<h2 class="text-center">My Heroes</h2>
+<div *ngIf="!hideForm" class="row">
+  <app-hero-form (newHero)="add($event)"></app-hero-form>
+</div>
+
+<div class="row">
+  <div class="heroes">
+    <div *ngFor="let hero of heroes" class="hero">
+      <button class="btn" mat-stroked-button routerLink="/detail/{{ hero.id }}"
+              type="button">
+        <span class="badge">{{ hero.id }}</span>
+        <span class="name">{{ hero.name }}</span>
+      </button>
+      <button (click)="delete(hero)" class="delete" color="accent" mat-raised-button type="button">x</button>
+    </div>
+  </div>
+</div>

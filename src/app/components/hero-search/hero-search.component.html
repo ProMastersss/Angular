@@ -1,0 +1,17 @@
+<div class="text-center">
+  <mat-form-field>
+    <mat-label>Search heroes</mat-label>
+    <input #inputSearch (input)="search(inputSearch.value)" id="name" matInput placeholder="name"/>
+  </mat-form-field>
+</div>
+<div class="row">
+  <div class="heroes">
+    <div *ngFor="let hero of heroes$ | async">
+      <button class="btn" mat-stroked-button routerLink="/detail/{{ hero.id }}"
+              type="button">
+        <span class="badge">{{ hero.id }}</span>
+        <span class="name">{{ hero.name }}</span>
+      </button>
+    </div>
+  </div>
+</div>

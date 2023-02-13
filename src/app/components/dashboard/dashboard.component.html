@@ -1,0 +1,14 @@
+<h2 class="text-center">Dashboard</h2>
+<div class="row">
+  <div class="heroes">
+    <div *ngFor="let hero of heroes">
+      <button class="btn" mat-stroked-button routerLink="/detail/{{ hero.id }}"
+              type="button">
+        <span class="badge">{{ hero.id }}</span>
+        <span class="name">{{ hero.name }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+<hr>
+<app-hero-search></app-hero-search>
