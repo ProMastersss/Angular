@@ -25,12 +25,18 @@ import {HeroSearchComponent} from './components/hero-search/hero-search.componen
 import {HeroFormComponent} from './components/hero-form/hero-form.component';
 import {MatSelectModule} from "@angular/material/select";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {NgxsModule} from "@ngxs/store";
+import {NgxsReduxDevtoolsPluginModule} from "@ngxs/devtools-plugin";
+import {HeroesState} from "./store/heroes/heroes.state";
+import {NgxsLoggerPluginModule} from "@ngxs/logger-plugin";
+import {environment} from "../environments/environment.development";
+import {MessagesState} from "./store/messages/messages.state";
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, HeroesComponent, HeroDetailsComponent, MessagesComponent, DashboardComponent, HeroSearchComponent, HeroFormComponent],
   imports: [
     HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, {dataEncapsulation: true}),
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule.withServerTransition({appId: 'serverApp'}),
     AppRoutingModule,
     BrowserAnimationsModule,
     LayoutModule,
@@ -45,7 +51,10 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     HttpClientModule,
     MatSelectModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxsModule.forRoot([HeroesState, MessagesState], {developmentMode: !environment.production}),
+    NgxsLoggerPluginModule.forRoot(),
+    NgxsReduxDevtoolsPluginModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

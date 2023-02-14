@@ -1,5 +1,7 @@
 import {Component} from '@angular/core';
-import {MessageService} from "../../services/message.service";
+import {Select, Store} from "@ngxs/store";
+import {ClearMessages} from "../../store/messages/messages.actions";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-messages',
@@ -7,6 +9,12 @@ import {MessageService} from "../../services/message.service";
   styleUrls: ['./messages.component.scss']
 })
 export class MessagesComponent {
-  constructor(public messageService: MessageService) {
+  @Select((state: any) => state.messages.messages) messages$!: Observable<string[]>;
+
+  constructor(public store: Store) {
+  }
+
+  clear() {
+    this.store.dispatch(new ClearMessages())
   }
 }

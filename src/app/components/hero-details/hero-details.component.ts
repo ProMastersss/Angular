@@ -1,8 +1,11 @@
-import {Component, Input} from '@angular/core';
+import {Component} from '@angular/core';
 import {Hero} from "../../types/hero";
 import {ActivatedRoute} from "@angular/router";
-import {HeroService} from "../../services/hero.service";
 import {Location} from "@angular/common";
+import {Store} from "@ngxs/store";
+import {UpdateHero} from "../../store/heroes/heroes.actions";
+import {HeroesState} from "../../store/heroes/heroes.state";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-hero-details',
@@ -10,20 +13,18 @@ import {Location} from "@angular/common";
   styleUrls: ['./hero-details.component.scss']
 })
 export class HeroDetailsComponent {
-  @Input() hero?: Hero;
+  hero: Hero | undefined;
 
-  constructor(private route: ActivatedRoute, private heroesService: HeroService, private location: Location) {
-  }
-
-  ngOnInit(): void {
-    this.getHero();
-  }
-
-  getHero() {
+  constructor(private route: ActivatedRoute, private store: Store, private location: Location) {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.heroesService.getHero(id).subscribe(hero => {
-      this.hero = hero;
-    })
+    this.store.select(HeroesState.getHero)
+      .pipe(map(filterFn => filterFn(id)))
+      .subscribe(hero => {
+        if (hero) {
+          const {id, name} = hero;
+          this.hero = {id, name};
+        }
+      });
   }
 
   goBack() {
@@ -32,7 +33,7 @@ export class HeroDetailsComponent {
 
   save() {
     if (this.hero) {
-      this.heroesService.updateHero(this.hero).subscribe(() => this.goBack());
+      this.store.dispatch(new UpdateHero(this.hero)).subscribe(() => this.goBack());
     }
   }
 }

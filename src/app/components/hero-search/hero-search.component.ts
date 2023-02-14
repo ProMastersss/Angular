@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {Hero} from "../../types/hero";
 import {debounceTime, distinctUntilChanged, Observable, Subject, switchMap} from "rxjs";
 import {HeroService} from "../../services/hero.service";
@@ -8,18 +8,15 @@ import {HeroService} from "../../services/hero.service";
   templateUrl: './hero-search.component.html',
   styleUrls: ['./hero-search.component.scss']
 })
-export class HeroSearchComponent implements OnInit {
+export class HeroSearchComponent {
   heroes$!: Observable<Hero[]>;
   private searchQuery = new Subject<string>();
 
   constructor(private heroService: HeroService) {
-  }
-
-  ngOnInit(): void {
     this.heroes$ = this.searchQuery.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((query: string) => this.heroService.searchHeroes(query)),
+      switchMap((query: string) => this.heroService.search(query))
     );
   }
 

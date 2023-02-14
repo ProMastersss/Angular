@@ -1,41 +1,34 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {Hero} from '../../types/hero';
-import {HeroService} from "../../services/hero.service";
 import {HeroExtended} from "../../types/hero-extended";
+import {Select, Store} from "@ngxs/store";
+import {AddHero, DeleteHero} from "../../store/heroes/heroes.actions";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-heroes',
   templateUrl: './heroes.component.html',
   styleUrls: ['./heroes.component.scss'],
 })
-export class HeroesComponent implements OnInit {
-  heroes: Hero[] = [];
+export class HeroesComponent {
+  @Select((state: any) => state.heroes.heroes) heroes$!: Observable<Hero[]>;
   hideForm = false;
 
-  constructor(private heroService: HeroService) {
-  }
-
-  ngOnInit(): void {
-    this.getHeroes();
-  }
-
-  getHeroes() {
-    this.heroService.getHeroes().subscribe((heroes) => {
-      this.heroes = heroes;
-    });
+  constructor(private store: Store) {
   }
 
   add(hero: HeroExtended) {
-    this.heroService.addHero({name: hero.name} as Hero)
-      .subscribe(hero => {
-        this.heroes.push(hero);
-        this.hideForm = true;
+    this.hideForm = true;
+    this.store.dispatch(new AddHero({name: hero.name} as Hero))
+      .subscribe(() => {
+        this.hideForm = false;
       });
   }
 
   delete(hero: Hero) {
-    this.heroes = this.heroes.filter(h => h.id !== hero.id);
-    this.heroService.deleteHero(hero)
-      .subscribe();
+    this.hideForm = true;
+    this.store.dispatch(new DeleteHero(hero)).subscribe(() => {
+      this.hideForm = false;
+    });
   }
 }

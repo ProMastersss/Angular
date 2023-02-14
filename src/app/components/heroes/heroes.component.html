@@ -1,11 +1,15 @@
 <h2 class="text-center">My Heroes</h2>
-<div *ngIf="!hideForm" class="row">
-  <app-hero-form (newHero)="add($event)"></app-hero-form>
+<div class="row">
+  <div class="col m">
+    <app-hero-form (newHero)="add($event)" *ngIf="!hideForm"></app-hero-form>
+    <mat-spinner *ngIf="hideForm"></mat-spinner>
+  </div>
 </div>
+
 
 <div class="row">
   <div class="heroes">
-    <div *ngFor="let hero of heroes" class="hero">
+    <div *ngFor="let hero of heroes$ | async" class="hero">
       <button class="btn" mat-stroked-button routerLink="/detail/{{ hero.id }}"
               type="button">
         <span class="badge">{{ hero.id }}</span>

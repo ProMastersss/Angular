@@ -1,25 +1,13 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {Hero} from "../../types/hero";
-import {HeroService} from "../../services/hero.service";
+import {Observable} from "rxjs";
+import {Select} from "@ngxs/store";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
-  heroes: Hero[] = [];
-
-  constructor(private heroService: HeroService) {
-  }
-
-  ngOnInit(): void {
-    this.getHeroes();
-  }
-
-  getHeroes() {
-    this.heroService.getHeroes().subscribe((heroes) => {
-      this.heroes = heroes.slice(-5);
-    });
-  }
+export class DashboardComponent {
+  @Select((state: any) => state.heroes.heroes.slice(-5)) heroes$!: Observable<Hero[]>;
 }

@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Hero} from "../types/hero";
 import {catchError, Observable, of, tap} from "rxjs";
-import {MessageService} from "./message.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map} from "rxjs/operators";
+import {AddMessage} from "../store/messages/messages.actions";
+import {Store} from "@ngxs/store";
 
 interface Response<T> {
   data: T
@@ -18,7 +19,7 @@ export class HeroService {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
 
-  constructor(private http: HttpClient, private messageService: MessageService) {
+  constructor(private http: HttpClient, private store: Store) {
   }
 
   getHeroes(): Observable<Hero[]> {
@@ -28,15 +29,6 @@ export class HeroService {
         tap(_ => this.log('Fetched heroes')),
         catchError(this.handleError<Hero[]>('getHeroes', []))
       );
-  }
-
-  getHero(id: number): Observable<Hero> {
-    const url = `${this.heroesUrl}/${id}`;
-    return this.http.get<Response<Hero>>(url).pipe(
-      map(data => data.data),
-      tap(_ => this.log(`Fetched hero id=${id}`)),
-      catchError(this.handleError<Hero>(`getHero id=${id}`))
-    );
   }
 
   updateHero(hero: Hero): Observable<any> {
@@ -62,18 +54,21 @@ export class HeroService {
     );
   }
 
-  searchHeroes(term: string): Observable<Hero[]> {
-    if (!term.trim()) {
+  search(query: string) {
+    if (!query.trim()) {
       return of([]);
     }
 
-    return this.http.get<Response<Hero[]>>(`${this.heroesUrl}/?name=${term}`).pipe(
-      map(d => d.data),
-      tap(x => x.length ?
-        this.log(`found heroes matching "${term}"`) :
-        this.log(`no heroes matching "${term}"`)),
-      catchError(this.handleError<Hero[]>('searchHeroes', []))
-    );
+    const filteredHeroes = this.store.selectSnapshot<Hero[]>((state: any) => state.heroes.heroes)
+      .filter(hero => hero.name.match(new RegExp(query, "i")));
+
+    if (filteredHeroes.length) {
+      this.log(`found heroes matching "${query}"`);
+    } else {
+      this.log(`no heroes matching "${query}"`);
+    }
+
+    return of(filteredHeroes);
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
@@ -85,6 +80,6 @@ export class HeroService {
   }
 
   private log(message: string) {
-    this.messageService.add(`HeroService: ${message}`);
+    this.store.dispatch(new AddMessage(`HeroService: ${message}`));
   }
 }
