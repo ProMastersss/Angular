@@ -5,6 +5,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map} from "rxjs/operators";
 import {AddMessage} from "../store/messages/messages.actions";
 import {Store} from "@ngxs/store";
+import {AppStore} from "../types/store";
 
 interface Response<T> {
   data: T
@@ -32,7 +33,7 @@ export class HeroService {
   }
 
   updateHero(hero: Hero): Observable<any> {
-    return this.http.put<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
+    return this.http.put<null>(this.heroesUrl, hero, this.httpOptions).pipe(
       tap(_ => this.log(`Updated hero id=${hero.id}`)),
       catchError(this.handleError<any>('updateHero ' + `id=${hero.id}`))
     );
@@ -48,7 +49,7 @@ export class HeroService {
 
   deleteHero(hero: Hero): Observable<Hero> {
     const url = `${this.heroesUrl}/${hero.id}`;
-    return this.http.delete<Hero>(url, this.httpOptions).pipe(
+    return this.http.delete<null>(url, this.httpOptions).pipe(
       tap(_ => this.log(`Delete hero id=${hero.id}`)),
       catchError(this.handleError<any>('deleteHero ' + `id=${hero.id}`))
     );
@@ -59,7 +60,7 @@ export class HeroService {
       return of([]);
     }
 
-    const filteredHeroes = this.store.selectSnapshot<Hero[]>((state: any) => state.heroes.heroes)
+    const filteredHeroes = this.store.selectSnapshot<Hero[]>((state: AppStore) => state.heroes.heroes)
       .filter(hero => hero.name.match(new RegExp(query, "i")));
 
     if (filteredHeroes.length) {
@@ -72,7 +73,7 @@ export class HeroService {
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
+    return (error: Error): Observable<T> => {
       console.error(error);
       this.log(`${operation} failed: ${error.message}`);
       return of(result as T);

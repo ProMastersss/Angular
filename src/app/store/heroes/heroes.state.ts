@@ -1,24 +1,31 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
 import {Action, NgxsOnInit, Selector, State, StateContext} from '@ngxs/store';
 import {Hero} from "../../types/hero";
-import {AddHero, DeleteHero, GetHeroes, UpdateHero} from "./heroes.actions";
+import {AddHero, DeleteHero, UpdateHero} from "./heroes.actions";
 import {HeroService} from "../../services/hero.service";
 import {tap} from "rxjs";
 import {insertItem, patch, removeItem, updateItem} from "@ngxs/store/operators";
+import {isPlatformServer} from "@angular/common";
+import {makeStateKey, TransferState} from "@angular/platform-browser";
 
 export interface HeroesStateModel {
   heroes: Hero[];
 }
 
+export const HeroesStateName = 'heroes';
+
+export const STATE_KEY = makeStateKey<Hero[]>('heroesState');
+
 @State<HeroesStateModel>({
-  name: 'heroes',
+  name: HeroesStateName,
   defaults: {
     heroes: []
   }
 })
 @Injectable()
 export class HeroesState implements NgxsOnInit {
-  constructor(private heroService: HeroService) {
+  // @ts-ignore
+  constructor(@Inject(PLATFORM_ID) private platformId, private transferState: TransferState, private heroService: HeroService) {
   }
 
   @Selector()
@@ -27,14 +34,15 @@ export class HeroesState implements NgxsOnInit {
   }
 
   ngxsOnInit(ctx: StateContext<HeroesStateModel>) {
-    ctx.dispatch(new GetHeroes());
-  }
-
-  @Action(GetHeroes)
-  getHeroes({setState}: StateContext<HeroesStateModel>) {
-    return this.heroService.getHeroes().pipe(tap(heroes => {
-      setState({heroes});
-    }));
+    if (isPlatformServer(this.platformId)) {
+      this.heroService.getHeroes().subscribe((heroes) => {
+        this.transferState.set(STATE_KEY, heroes);
+        ctx.setState(patch<HeroesStateModel>({heroes}));
+      });
+    } else if (this.transferState.hasKey(STATE_KEY)) {
+      ctx.setState({heroes: this.transferState.get(STATE_KEY, [])});
+      this.transferState.remove(STATE_KEY);
+    }
   }
 
   @Action(AddHero)

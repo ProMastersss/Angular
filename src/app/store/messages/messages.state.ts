@@ -7,8 +7,10 @@ export interface MessagesStateModel {
   messages: string[];
 }
 
+export const MessagesStateName = 'messages';
+
 @State<MessagesStateModel>({
-  name: 'messages',
+  name: MessagesStateName,
   defaults: {
     messages: []
   }

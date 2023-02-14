@@ -4,6 +4,7 @@ import {HeroExtended} from "../../types/hero-extended";
 import {Select, Store} from "@ngxs/store";
 import {AddHero, DeleteHero} from "../../store/heroes/heroes.actions";
 import {Observable} from "rxjs";
+import {AppStore} from "../../types/store";
 
 @Component({
   selector: 'app-heroes',
@@ -11,7 +12,7 @@ import {Observable} from "rxjs";
   styleUrls: ['./heroes.component.scss'],
 })
 export class HeroesComponent {
-  @Select((state: any) => state.heroes.heroes) heroes$!: Observable<Hero[]>;
+  @Select((state: AppStore) => state.heroes.heroes) heroes$!: Observable<Hero[]>;
   hideForm = false;
 
   constructor(private store: Store) {
