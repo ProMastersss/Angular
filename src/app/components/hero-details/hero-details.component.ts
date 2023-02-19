@@ -17,7 +17,7 @@ export class HeroDetailsComponent {
 
   constructor(private route: ActivatedRoute, private store: Store, private location: Location) {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.store.select(HeroesState.getHero)
+    this.store.selectOnce(HeroesState.getHero)
       .pipe(map(filterFn => filterFn(id)))
       .subscribe(hero => {
         if (hero) {
